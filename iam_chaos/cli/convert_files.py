@@ -1,6 +1,6 @@
 # cli/asyncio.run(AsyncFileConverter(args.input_file).convert_files.py
 import asyncio
-from utils.file_converter import *
+from iam_chaos.utils.file_converter import *
 import argparse
 import json
 import logging

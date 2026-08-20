@@ -1,5 +1,5 @@
 # cli/generate_identities.py
-from core.identity_generator import generate_identities_parallel    
+from iam_chaos.core.identity_generator import generate_identities_parallel
 import asyncio
 import argparse
 import json

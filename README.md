@@ -40,7 +40,7 @@ pip install --prefix=/install -r ./requirements.txt
 You can specify the number of identities to generate, the input file, and the output format and more through command-line arguments.
 
 ```bash
-python src/main.py <number_of_identities> [--names-file NAMES_FILE] [--surnames-file NAMES_FILE] [--output-file OUTPUT_FILE] [--output-format {csv,excel,json,parquet,all}]
+iam-chaos generate <number_of_identities> [--output-file OUTPUT_FILE] [--output-format {csv,excel,json,parquet,all}]
 ```
 
 ### Command-Line Arguments
@@ -48,13 +48,13 @@ python src/main.py <number_of_identities> [--names-file NAMES_FILE] [--surnames-
 To generate 100 identities from a given names file and save them as CSV, JSON, Parquet and Excel (all is default):
 
 ```bash
-python src/main.py 100 --names-file names.txt --surnames-file surnames.txt --output-file output/identities --output-format all
+iam-chaos generate 100 --output-file output/identities --output-format all
 ```
 
 If no --names-file/--surnames-file argument is given, the tool will use the faker library to generate random names and surnames:
 
 ```bash
-python identity_generator.py 100
+iam-chaos generate 100
 ```
 
 ### Arguments

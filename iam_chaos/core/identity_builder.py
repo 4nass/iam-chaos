@@ -1,5 +1,5 @@
 from enum import Enum
-from core.address_builder import AddressBuilder
+from iam_chaos.core.address_builder import AddressBuilder
 
 class Gender(Enum):
     MALE = 'M'

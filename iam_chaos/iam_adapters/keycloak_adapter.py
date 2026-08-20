@@ -1,4 +1,4 @@
-from iam_adapters.iam_adapter import IAMAdapter
+from iam_chaos.iam_adapters.iam_adapter import IAMAdapter
 from mantelo import KeycloakAdmin
 
 class KeycloakAdapter(IAMAdapter):
