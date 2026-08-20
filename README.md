@@ -1,6 +1,6 @@
-# Identity Forge
+# IAMChaos
 
-This project is a Python command-line tool that generates a specified number of fictitious identities (including name, surname, username, and email address) from a provided list of names and surnames. The generated identities are saved in CSV or Excel (XLSX) format, ensuring that all usernames are unique.
+IAMChaos is a Python tool for IAM and CIAM chaos engineering and acceptance testing. It generates deterministic identities, lifecycle events, edge cases, and delivery faults to test synchronization resilience across identity platforms.
 
 ## Features
 
@@ -40,7 +40,7 @@ pip install --prefix=/install -r ./requirements.txt
 You can specify the number of identities to generate, the input file, and the output format and more through command-line arguments.
 
 ```bash
-python src/main.py <number_of_identities> [--names-file NAMES_FILE] [--surnames-file NAMES_FILE] [--output-file OUTPUT_FILE] [--output-format {csv,excel,json,parquet,all}]
+iam-chaos generate <number_of_identities> [--names-file NAMES_FILE] [--surnames-file NAMES_FILE] [--output-file OUTPUT_FILE] [--output-format {csv,excel,json,parquet,all}]
 ```
 
 ### Command-Line Arguments
@@ -48,14 +48,28 @@ python src/main.py <number_of_identities> [--names-file NAMES_FILE] [--surnames-
 To generate 100 identities from a given names file and save them as CSV, JSON, Parquet and Excel (all is default):
 
 ```bash
-python src/main.py 100 --names-file names.txt --surnames-file surnames.txt --output-file output/identities --output-format all
+iam-chaos generate 100 --names-file names.txt --surnames-file surnames.txt --output-file output/identities --output-format all
 ```
 
 If no --names-file/--surnames-file argument is given, the tool will use the faker library to generate random names and surnames:
 
 ```bash
-python identity_generator.py 100
+iam-chaos generate 100
 ```
+
+## Python library API
+
+The main user interface is the CLI. A future PyPI library API is reserved for
+Pytest-based IAM acceptance tests under the public import namespace
+`iam_chaos`:
+
+```python
+from iam_chaos.engine import ScenarioEngine
+from iam_chaos.mutators import UnicodeMutator
+```
+
+This namespace is a public design decision only. The library engine and its
+mutators are not implemented in the current CLI milestone.
 
 ### Arguments
 
