@@ -1,13 +1,13 @@
 from multiprocessing import Manager
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from iam_chaos.core.identity_factory import IdentityFactory
+from core.identity_factory import IdentityFactory
 import pandas as pd
 import re
 import time
 import ast
 import logging
 
-from iam_chaos.utils.file_writer import AsyncFileWriter
+from utils.file_writer import AsyncFileWriter
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')

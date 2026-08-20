@@ -1,4 +1,4 @@
-from iam_chaos.iam_adapters.iam_adapter import IAMAdapter
+from iam_adapters.iam_adapter import IAMAdapter
 from okta.client import Client as OktaClient
 from okta.models import UserProfile
 

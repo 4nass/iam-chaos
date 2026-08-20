@@ -1,5 +1,5 @@
 import pandas as pd
-from iam_chaos.utils.file_converter import *
+from src.file_converter import *
 
 def test_csv_to_excel_conversion(tmpdir):
     """Test converting a CSV file to Excel format."""

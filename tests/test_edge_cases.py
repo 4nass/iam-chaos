@@ -1,5 +1,5 @@
 import pytest
-from iam_chaos.core.identity_generator import generate_identities_parallel
+from src.identity_generator import generate_identities_parallel
 import pandas as pd
 import os
 

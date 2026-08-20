@@ -1,8 +1,8 @@
 import random
 from faker import Faker
 from unidecode import unidecode
-from iam_chaos.core.address_factory import AddressFactory
-from iam_chaos.core.identity_builder import CommunicationChannel, Gender, Honorific, IdentityBuilder
+from core.address_factory import AddressFactory
+from core.identity_builder import CommunicationChannel, Gender, Honorific, IdentityBuilder
 
 class IdentityFactory:
     @staticmethod

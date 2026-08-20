@@ -1,4 +1,4 @@
-from iam_chaos.iam_adapters.iam_adapter import IAMAdapter
+from iam_adapters.iam_adapter import IAMAdapter
 
 class EntraIDAdapter(IAMAdapter):
     def format_identity(self, identity):

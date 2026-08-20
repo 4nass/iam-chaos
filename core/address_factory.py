@@ -1,7 +1,7 @@
 
 import random
 from faker import Faker
-from iam_chaos.core.address_builder import AddressBuilder, AddressType
+from core.address_builder import AddressBuilder, AddressType
 
 class AddressFactory:
     @staticmethod
