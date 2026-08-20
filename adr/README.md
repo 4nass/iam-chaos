@@ -17,6 +17,7 @@ The project is moving from a generic fake identity generator to an IAM chaos eng
 | [0007](0007-offline-first-target-adapters.md) | Use offline-first target adapters and safe execution | Accepted |
 | [0008](0008-reporting-and-ci-integration.md) | Produce machine-readable reports and CI-friendly results | Accepted |
 | [0009](0009-phased-implementation-roadmap.md) | Deliver the system in four implementation milestones | Accepted |
+| [0010](0010-public-python-package-boundary.md) | Separate CLI internals from the future public Python library | Accepted |
 
 ## ADR format
 
