@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-This directory records the main architecture decisions for Identity Forge.
+This directory records the main architecture decisions for IAMChaos.
 
 The project is moving from a generic fake identity generator to an IAM chaos engineering and acceptance test suite. These records explain what we build, why we build it, and what is intentionally out of scope.
 

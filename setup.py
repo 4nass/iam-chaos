@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""IAM Forge setup script."""
+"""IAMChaos setup script."""
 from datetime import datetime as dt
 
 from setuptools import find_packages, setup
 
-PROJECT_NAME = "IAM Forge"
+PROJECT_NAME = "IAMChaos"
 PROJECT_VERSION = "0.0.1"
-PROJECT_PACKAGE_NAME = "iamforge"
+PROJECT_PACKAGE_NAME = "iamchaos"
 PROJECT_LICENSE = "Apache License 2.0"
 PROJECT_AUTHOR = "4nass"
 AUTHOR_EMAIL = "contact@anass.ch"
@@ -14,7 +14,7 @@ PROJECT_COPYRIGHT = f" 2024-{dt.now().year}, {PROJECT_AUTHOR}"
 PROJECT_URL = "https://anass.ch/projects/"
 
 PROJECT_GITHUB_USERNAME = "4nass"
-PROJECT_GITHUB_REPOSITORY = "iamforge"
+PROJECT_GITHUB_REPOSITORY = "IAMChaos"
 
 PYPI_URL = f"https://pypi.python.org/pypi/{PROJECT_PACKAGE_NAME}"
 GITHUB_PATH = f"{PROJECT_GITHUB_USERNAME}/{PROJECT_GITHUB_REPOSITORY}"
@@ -65,5 +65,5 @@ setup(
     python_requires=f">={MIN_PY_VERSION}",
     long_description=open("README.md").read(),  # Load README as long description
     long_description_content_type="text/markdown",
-    entry_points={"console_scripts": ["iamforge=__main__:main"]},
+    entry_points={"console_scripts": ["iamchaos=__main__:main", "iamforge=__main__:main"]},
 )

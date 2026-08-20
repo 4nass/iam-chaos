@@ -1,6 +1,6 @@
-# Identity Forge
+# IAMChaos
 
-This project is a Python command-line tool that generates a specified number of fictitious identities (including name, surname, username, and email address) from a provided list of names and surnames. The generated identities are saved in CSV or Excel (XLSX) format, ensuring that all usernames are unique.
+IAMChaos is a Python tool for IAM and CIAM chaos engineering and acceptance testing. It generates deterministic identities, lifecycle events, edge cases, and delivery faults to test synchronization resilience across identity platforms.
 
 ## Features
 

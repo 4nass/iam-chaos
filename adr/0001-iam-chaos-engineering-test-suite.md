@@ -5,7 +5,7 @@
 
 ## Context
 
-Identity Forge started as a tool that generated fake identities and exported them to files.
+IAMChaos started as a tool that generated fake identities and exported them to files.
 
 Many tools can generate names, addresses, and emails. This is not enough for IAM testing. IAM failures often happen during synchronization, lifecycle changes, retries, duplicate events, Unicode normalization, and partial failures.
 
@@ -13,7 +13,7 @@ The project needs a clearer purpose and a stronger testing model.
 
 ## Decision
 
-Identity Forge will become a specialized test tool for IAM and CIAM architectures.
+IAMChaos will become a specialized test tool for IAM and CIAM architectures.
 
 The tool will generate:
 
