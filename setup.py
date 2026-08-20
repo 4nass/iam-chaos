@@ -65,5 +65,5 @@ setup(
     python_requires=f">={MIN_PY_VERSION}",
     long_description=open("README.md").read(),  # Load README as long description
     long_description_content_type="text/markdown",
-    entry_points={"console_scripts": ["iam-chaos=iam_chaos.__main__:main"]},
+    entry_points={"console_scripts": ["iam-chaos=iam_chaos.__main__:main", "iamforge=iam_chaos.__main__:main"]},
 )
