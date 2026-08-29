@@ -9,12 +9,16 @@ IAMChaos is a Python tool for IAM and CIAM chaos engineering and acceptance test
 - Outputs identities in both CSV and Excel formats.
 - Ensures there are no duplicate usernames and emails.
 - Command-line arguments allow flexible input and output options.
+- Runs versioned YAML lifecycle scenarios offline.
+- Generates deterministic identities from seed and index.
+- Exports payloads, events, and expected/actual assertions as JSON.
 
 ## Prerequisites
 
 Before running the project, ensure you have the following installed:
 
 - Python 3.8+
+- `PyYAML` library (for loading versioned offline scenarios)
 - `pandas` library (for CSV/Excel/JSON/Parquet export)
 - `argparse` library (for parsing command-line arguments)
 - `faker` library (for generating random names if no input file is provided)
@@ -35,32 +39,21 @@ pip install --prefix=/install -r ./requirements.txt
 ```
 
 ## Usage
-### Command-Line Arguments
 
-You can specify the number of identities to generate, the input file, and the output format and more through command-line arguments.
-
-```bash
-iam-chaos generate <number_of_identities> [--names-file NAMES_FILE] [--surnames-file NAMES_FILE] [--output-file OUTPUT_FILE] [--output-format {csv,excel,json,parquet,all}]
-```
-
-### Command-Line Arguments
-
-To generate 100 identities from a given names file and save them as CSV, JSON, Parquet and Excel (all is default):
+Run a deterministic, versioned YAML scenario offline:
 
 ```bash
-iam-chaos generate 100 --names-file names.txt --surnames-file surnames.txt --output-file output/identities --output-format all
+iam-chaos run examples/scenarios/iam-lifecycle-edge-cases.yaml --output-dir output/iam-chaos --allow-failures
 ```
 
-If no --names-file/--surnames-file argument is given, the tool will use the faker library to generate random names and surnames:
-
-```bash
-iam-chaos generate 100
-```
+The command writes `payloads.json`, `events.json`, and `report.json`. A
+failed expected/actual assertion returns exit code 1; use `--allow-failures`
+for exploratory chaos runs.
 
 ## Python library API
 
-The main user interface is the CLI. A future PyPI library API is reserved for
-Pytest-based IAM acceptance tests under the public import namespace
+The main user interface is the CLI. The project also exposes a PyPI library
+API for Pytest-based IAM acceptance tests under the public import namespace
 `iam_chaos`:
 
 ```python
@@ -68,10 +61,10 @@ from iam_chaos.engine import ScenarioEngine
 from iam_chaos.mutators import UnicodeMutator
 ```
 
-This namespace is a public design decision only. The library engine and its
-mutators are not implemented in the current CLI milestone.
+The public API is intentionally small at this stage. The engine and its
+mutators are implemented by the offline scenario runner.
 
-### Arguments
+## Legacy identity exporter
 
 - number_of_identities: The number of identities to generate (required).
 - --names-file: Optional file containing the list of names and surnames (if not provided, random names will be generated using the faker library).

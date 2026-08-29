@@ -38,8 +38,9 @@ from iam_chaos.engine import ScenarioEngine
 from iam_chaos.mutators import UnicodeMutator
 ```
 
-This ADR reserves the namespace and documents the intended contract. It does
-not implement the library package, the engine, or the mutators.
+This ADR defines the namespace and the boundary. The current scenario-engine
+implementation lives in `iam_chaos`; the legacy CLI folders are not moved
+under that namespace.
 
 ## Consequences
 
@@ -51,11 +52,10 @@ not implement the library package, the engine, or the mutators.
 - The public API can be designed around the scenario engine rather than the
   legacy identity generator modules.
 
-### Negative
+### Trade-off
 
-- The repository temporarily has no implemented `iam_chaos` import package.
-- The CLI and the future library will need an explicit integration boundary
-  when the library implementation starts.
+- The library API is intentionally small and experimental at this stage.
+- The CLI and the library have an explicit integration boundary.
 
 ## Rejected alternatives
 

@@ -1,0 +1,63 @@
+version: 1
+name: iam-lifecycle-edge-cases
+seed: 20260819
+
+identities:
+  count: 2
+  tenant_id: tenant-a
+  groups:
+    - /engineering
+  roles:
+    - user
+
+steps:
+  - id: create
+    at: 0s
+    action: create
+
+  - id: out-of-order-update
+    at: 2s
+    action: update
+    identities: [0]
+    mutations:
+      - type: out_of_order
+
+
+  - id: unicode-nfd
+    at: 5s
+    action: update
+    identities: [0]
+    mutations:
+      - type: unicode_nfc_nfd
+        form: nfd
+
+  - id: username-collision
+    at: 10s
+    action: update
+    identities: [1]
+    mutations:
+      - type: username_collision
+        target_index: 0
+
+  - id: invalid-email
+    at: 15s
+    action: update
+    identities: [0]
+    mutations:
+      - type: invalid_email
+        value: not-an-email
+
+  - id: missing-username
+    at: 20s
+    action: update
+    identities: [0]
+    mutations:
+      - type: missing_required_field
+        field: username
+
+  - id: replay-disable
+    at: 25s
+    action: disable
+    identities: [0]
+    mutations:
+      - type: event_replay
