@@ -2,43 +2,13 @@ from multiprocessing import Manager
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from core.identity_factory import IdentityFactory
 import pandas as pd
-import re
 import time
-import ast
 import logging
 
 from utils.file_writer import AsyncFileWriter
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
-
-def clean_string(_str):
-    # Replace single quotes with double quotes
-    _str = _str.replace("'", '"')
-    # Escape special characters
-    _str = re.sub(r'\\', r'\\\\', _str)
-    return _str
-
-def safe_eval(_str):
-    if isinstance(_str, str):
-        try:
-            cleaned_str = clean_string(_str)
-            return ast.literal_eval(cleaned_str)
-        except (ValueError, SyntaxError):
-            return {}
-    return _str
-
-def load_names(file_path):
-    """Load names from a text file."""
-    try:
-        with open(file_path, 'r') as file:
-            return [line.strip() for line in file.readlines()]
-    except FileNotFoundError:
-        logging.error(f"File not found: {file_path}")
-        return []
-    except TypeError:
-        logging.error(f"Unexpected error: {file_path}")
-        return []
 
 def generate_identity(unique_usernames={}):
     """Generate a single identity and ensure the username is unique."""
@@ -80,7 +50,6 @@ async def generate_identities_parallel(n, output_file=None, output_format=None, 
             df = pd.DataFrame(identities)
             
             if 'address' in df.columns:
-                df['address'] = df['address'].apply(safe_eval)
                 address_df = pd.json_normalize(df['address']).add_prefix('address.')
                 df = df.drop(columns=['address']).join(address_df)
             else:

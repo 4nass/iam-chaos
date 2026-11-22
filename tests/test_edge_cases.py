@@ -44,6 +44,8 @@ def test_generator_exports_names_from_default_provider(tmp_path):
 
     assert len(rows) == 3
     assert all(row["name"] and row["surname"] for row in rows)
+    assert all(row["address.country"] == "France" for row in rows)
+    assert all(row["address.postalCode"] for row in rows)
     assert {path.suffix for path in tmp_path.iterdir()} == {
         ".csv", ".xlsx", ".json", ".parquet"
     }

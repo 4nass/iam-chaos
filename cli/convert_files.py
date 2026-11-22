@@ -1,9 +1,9 @@
-# cli/asyncio.run(AsyncFileConverter(args.input_file).convert_files.py
 import asyncio
-from utils.file_converter import *
 import argparse
 import json
 import logging
+
+from utils.file_converter import AsyncFileConverter
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 

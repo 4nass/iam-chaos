@@ -1,8 +1,7 @@
 # Output files
-output/*.csv
-output/*.xlsx
-output/*.json
-output/*.parquet
+/output/
+/output_file.csv
+/output_file.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

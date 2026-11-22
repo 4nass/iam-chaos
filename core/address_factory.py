@@ -6,23 +6,10 @@ from core.address_builder import AddressBuilder, AddressType
 class AddressFactory:
     @staticmethod
     def create_address(locale="fr_FR"):
-        """Factory method to create address based on locale"""
-        if locale == 'fr_FR':
-            return FrenchAddress()
-        elif locale == 'es_ES':
-            return SpanishAddress()
-        elif locale == 'it_IT':
-            return ItalianAddress()
-        elif locale == 'pt_PT':
-            return PortugueseAddress()
-        elif locale == 'nl_NL':
-            return DutchAddress()
-        elif locale == 'en_GB':
-            return BritishAddress()
-        elif locale == 'en_US':
-            return AmericanAddress()
-        else:
+        """Create an address generator for the supported locale."""
+        if locale != "fr_FR":
             raise ValueError(f"Unsupported locale : {locale}")
+        return FrenchAddress()
 
 class FrenchAddress:
     def generate(self):
@@ -41,46 +28,3 @@ class FrenchAddress:
                    .add_region(fake.region())
                    .add_country('France'))
         return address
-
-class SpanishAddress:
-    def generate(self):
-        # Generate Address data
-        pass
-
-class ItalianAddress:
-    def generate(self):
-        # Generate Address data
-        pass
-
-class SpanishAddress:
-    def generate(self):
-        # Generate Address data
-        pass
-
-class PortugueseAddress:
-    def generate(self):
-        # Generate Address data
-        pass
-
-class DutchAddress:
-    def generate(self):
-        # Generate Address data
-        pass
-
-class BritishAddress:
-    def generate(self):
-        # Generate Address data
-        pass
-
-class AmericanAddress:
-    def generate(self):
-        # Generate Address data
-        pass
-
-class DefaultAddress:
-    def generate(self):
-        # Generate Address data
-        pass
-
-# Address = AddressFactory.create_Address('fr_FR')
-# Address.generate()

@@ -1,25 +1,16 @@
 #!/usr/bin/env python3
 """IAMChaos setup script."""
-from datetime import datetime as dt
-
 from setuptools import find_packages, setup
 
-PROJECT_NAME = "IAMChaos"
 PROJECT_VERSION = "0.0.1"
-# PyPI distribution name and public library import namespace.
-# The CLI remains a separate top-level module.
 PROJECT_PACKAGE_NAME = "iam-chaos"
-PROJECT_PUBLIC_LIBRARY_PACKAGE = "iam_chaos"
-PROJECT_LICENSE = "Apache License 2.0"
 PROJECT_AUTHOR = "4nass"
 AUTHOR_EMAIL = "contact@anass.ch"
-PROJECT_COPYRIGHT = f" 2024-{dt.now().year}, {PROJECT_AUTHOR}"
 PROJECT_URL = "https://anass.ch/projects/"
 
 PROJECT_GITHUB_USERNAME = "4nass"
 PROJECT_GITHUB_REPOSITORY = "iam-chaos"
 
-PYPI_URL = f"https://pypi.python.org/pypi/{PROJECT_PACKAGE_NAME}"
 GITHUB_PATH = f"{PROJECT_GITHUB_USERNAME}/{PROJECT_GITHUB_REPOSITORY}"
 GITHUB_URL = f"https://github.com/{GITHUB_PATH}"
 
@@ -39,18 +30,13 @@ REQUIRES = [
     "faker",
     "PyYAML>=6.0",
     "unidecode",
-    "pytest",
     "aiofiles",
-    "fastparquet",
     "pyarrow",
-    "python-keycloak",
-    "okta",
-    "pycognito",
 ]
 
 CLASSIFIERS=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: {PROJECT_LICENSE}",
+        "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ]
 

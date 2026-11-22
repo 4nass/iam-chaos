@@ -122,14 +122,6 @@ class MissingRequiredFieldMutator:
         return payload
 
 
-class EventReplayMutator:
-    name = "event_replay"
-
-
-class OutOfOrderMutator:
-    name = "out_of_order"
-
-
 PAYLOAD_MUTATORS = {
     "unicode": UnicodeMutator(),
     "unicode_nfc_nfd": UnicodeMutator(),

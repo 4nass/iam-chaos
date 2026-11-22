@@ -7,23 +7,10 @@ from core.identity_builder import CommunicationChannel, Gender, Honorific, Ident
 class IdentityFactory:
     @staticmethod
     def create_identity(locale="fr_FR"):
-        """Factory method to create identity based on locale"""
-        if locale == 'fr_FR':
-            return FrenchIdentity()
-        elif locale == 'es_ES':
-            return SpanishIdentity()
-        elif locale == 'it_IT':
-            return ItalianIdentity()
-        elif locale == 'pt_PT':
-            return PortugueseIdentity()
-        elif locale == 'nl_NL':
-            return DutchIdentity()
-        elif locale == 'en_GB':
-            return BritishIdentity()
-        elif locale == 'en_US':
-            return AmericanIdentity()
-        else:
+        """Create an identity generator for the supported locale."""
+        if locale != "fr_FR":
             raise ValueError(f"Unsupported locale : {locale}")
+        return FrenchIdentity()
 
 class FrenchIdentity:
     def generate(self, unique_usernames=None):
@@ -67,41 +54,3 @@ class FrenchIdentity:
                     .add_address(address.generate()))
         
         return identity
-
-class SpanishIdentity:
-    def generate(self):
-        # Generate identity data
-        pass
-
-class ItalianIdentity:
-    def generate(self):
-        # Generate identity data
-        pass
-
-class SpanishIdentity:
-    def generate(self):
-        # Generate identity data
-        pass
-
-class PortugueseIdentity:
-    def generate(self):
-        # Generate identity data
-        pass
-
-class DutchIdentity:
-    def generate(self):
-        # Generate identity data
-        pass
-
-class BritishIdentity:
-    def generate(self):
-        # Generate identity data
-        pass
-
-class AmericanIdentity:
-    def generate(self):
-        # Generate identity data
-        pass
-
-# identity = IdentityFactory.create_identity('fr_FR')
-# identity.generate()

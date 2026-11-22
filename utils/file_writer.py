@@ -1,5 +1,4 @@
 import aiofiles
-import pandas as pd
 
 class AsyncFileWriter:
     def __init__(self, df, output_file):
@@ -31,12 +30,3 @@ class AsyncFileWriter:
             await self.write_excel()
         if output_format in ['parquet', 'all']:
             await self.write_parquet()
-
-# Usage example
-#async def main():
-#    df = pd.DataFrame({"Name": ["Alice", "Bob"], "Age": [25, 30]})
-#    writer = AsyncFileWriter(df, "output_file")
-#    await writer.write_files('all')
-
-# Run the async main function
-#asyncio.run(main())
