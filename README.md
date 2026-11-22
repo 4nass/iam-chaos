@@ -38,6 +38,35 @@ Or by using `requirements.txt` file:
 pip install --prefix=/install -r ./requirements.txt
 ```
 
+## Running the tests
+
+Use Python 3.11, the version used by CI. From the repository root on Linux or
+WSL, create a fresh virtual environment and install the locked test dependencies:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-test.txt
+python -m pytest -q
+```
+
+If you use uv to manage Python, create the environment with
+`uv venv --python 3.11 --seed .venv`.
+
+The suite covers the offline scenario engine and the legacy generator and file
+conversions. It runs without credentials or external IAM services.
+
+Update the lockfile after editing `requirements-test.in`:
+
+```bash
+uv pip compile --universal --python-version 3.11 requirements-test.in -o requirements-test.txt
+```
+
+GitHub Actions runs the full suite on pull requests to `main` and on pushes to
+`main`. A separate job installs the package into a clean environment and
+checks the `iam-chaos` command and the `iam_chaos` Python import from outside
+the checkout.
+
 ## Usage
 
 Run a deterministic, versioned YAML scenario offline:
