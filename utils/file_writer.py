@@ -17,10 +17,7 @@ class AsyncFileWriter:
             await f.write(csv_data)
 
     async def write_excel(self):
-        async with aiofiles.tempfile.NamedTemporaryFile(delete=False) as tmp:
-            self.df.to_excel(tmp.name, index=False, sheet_name='Users')
-            async with aiofiles.open(f'{self.output_file}.xlsx', mode='wb') as f:
-                await f.write(tmp.read())
+        self.df.to_excel(f'{self.output_file}.xlsx', index=False, sheet_name='Users')
 
     async def write_parquet(self):
         self.df.to_parquet(f'{self.output_file}.parquet', index=False)  # parquet does not support async yet

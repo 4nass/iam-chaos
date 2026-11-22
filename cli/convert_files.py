@@ -17,8 +17,8 @@ def main():
     parser_csv_to_excel.add_argument('output_file', help='Output Excel file')
     parser_csv_to_excel.add_argument('--columns-to-keep', nargs='*', help='Columns to keep in the output')
     parser_csv_to_excel.add_argument('--column-mapping', type=str, help='Optional: JSON string to rename columns')
-    parser_csv_to_excel.set_defaults(func=lambda args: asyncio.run(AsyncFileConverter(args.input_file).asyncio.run(AsyncFileConverter(args.input_file).convert_csv_to_excel(
-        args.output_file, args.columns_to_keep, json.loads(args.column_mapping) if args.column_mapping else None))))
+    parser_csv_to_excel.set_defaults(func=lambda args: asyncio.run(AsyncFileConverter(args.input_file).convert_csv_to_excel(
+        args.output_file, args.columns_to_keep, json.loads(args.column_mapping) if args.column_mapping else None)))
     
     # JSON to Excel sub-command
     parser_json_to_excel = subparsers.add_parser('json-to-excel', help='Convert JSON to Excel')
@@ -105,7 +105,7 @@ def main():
     parser_parquet_to_json.add_argument('--columns-to-keep', nargs='*', help='Columns to keep in the output')
     parser_parquet_to_json.add_argument('--column-mapping', type=str, help='Optional: JSON string to rename columns')
     parser_parquet_to_json.set_defaults(func=lambda args: asyncio.run(
-        AsyncFileConverter(args.input_file).convert_excel_to_json(
+        AsyncFileConverter(args.input_file).convert_parquet_to_json(
             args.output_file, 
             args.columns_to_keep, 
             json.loads(args.column_mapping) if args.column_mapping else None)))

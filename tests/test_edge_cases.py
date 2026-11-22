@@ -1,32 +1,49 @@
+import asyncio
+import csv
+
 import pytest
-from src.identity_generator import generate_identities_parallel
-import pandas as pd
-import os
 
-def test_no_workers(tmpdir):
-    """Test passing zero workers (should default to 1 or throw an error)."""
-    output_file = os.path.join(tmpdir, "identities")
+from cli.generate_identities import main
+from core.identity_generator import generate_identities_parallel
+
+
+def test_zero_workers_is_rejected(tmp_path):
     with pytest.raises(ValueError):
-        generate_identities_parallel(10, output_file=output_file, workers=0)
+        asyncio.run(
+            generate_identities_parallel(
+                10, output_file=tmp_path / "identities", output_format="csv", workers=0
+            )
+        )
 
-def test_invalid_json_column_mapping(tmpdir):
-    """Test handling invalid JSON format for column mapping."""
-    output_file = os.path.join(tmpdir, "identities_invalid")
-    
-    invalid_json = "{'username': 'User Name'}"  # Invalid JSON (single quotes)
-    
-    with pytest.raises(TypeError):
-        generate_identities_parallel(10, output_file=output_file, column_mapping=invalid_json)
+    assert not list(tmp_path.iterdir())
 
-def test_empty_names_file(tmpdir):
-    """Test behavior when an empty names file is provided."""
-    empty_names_file = tmpdir.join("empty_names.txt")
-    empty_names_file.write("")  # Empty file
 
-    output_file = os.path.join(tmpdir, "identities_empty_names")
-    generate_identities_parallel(10, names_file=str(empty_names_file), output_file=output_file)
+def test_cli_rejects_invalid_json_column_mapping(tmp_path, caplog):
+    with pytest.raises(SystemExit) as exc:
+        main([
+            "10",
+            "--output-file", str(tmp_path / "identities"),
+            "--column-mapping", "{'username': 'User Name'}",
+        ])
 
-    # Check that the file is generated
-    assert os.path.exists(f'{output_file}.csv')
-    df = pd.read_csv(f'{output_file}.csv')
-    assert len(df) == 10  # Default Faker should still generate identities
+    assert exc.value.code == 1
+    assert "Invalid JSON format for column mapping" in caplog.text
+    assert not list(tmp_path.iterdir())
+
+
+def test_generator_exports_names_from_default_provider(tmp_path):
+    output_file = tmp_path / "identities"
+    asyncio.run(
+        generate_identities_parallel(
+            3, output_file=output_file, output_format="all", workers=1
+        )
+    )
+
+    with output_file.with_suffix(".csv").open(encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+
+    assert len(rows) == 3
+    assert all(row["name"] and row["surname"] for row in rows)
+    assert {path.suffix for path in tmp_path.iterdir()} == {
+        ".csv", ".xlsx", ".json", ".parquet"
+    }

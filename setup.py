@@ -35,6 +35,7 @@ PACKAGES = find_packages(exclude=["tests", "tests.*"])
 
 REQUIRES = [
     "pandas",
+    "openpyxl",
     "faker",
     "PyYAML>=6.0",
     "unidecode",
