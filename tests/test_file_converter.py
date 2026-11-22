@@ -1,259 +1,126 @@
-import pandas as pd
-from src.file_converter import *
+import asyncio
+import csv
+import json
 
-def test_csv_to_excel_conversion(tmpdir):
-    """Test converting a CSV file to Excel format."""
-    csv_file = tmpdir.join("test.csv")
-    excel_file = tmpdir.join("test.xlsx")
+import pyarrow as pa
+import pyarrow.parquet as pq
+import pytest
+from openpyxl import Workbook, load_workbook
 
-    # Create a sample CSV
-    df = pd.DataFrame({
-        'name': ['John Doe', 'Jane Doe'],
-        'email': ['john@example.com', 'jane@example.com']
-    })
-    df.to_csv(csv_file, index=False)
+from utils.file_converter import AsyncFileConverter
 
-    # Convert to Excel
-    convert_csv_to_excel(csv_file, excel_file)
-    
-    # Validate the conversion
-    df_excel = pd.read_excel(excel_file, sheet_name='Users')
-    assert 'name' in df_excel.columns
-    assert 'email' in df_excel.columns
-    assert df_excel.shape == df.shape
 
-def test_csv_to_json_conversion(tmpdir):
-    """Test converting a CSV file to JSON format."""
-    csv_file = tmpdir.join("test.csv")
-    json_file = tmpdir.join("test.json")
+IDENTITIES = [
+    {"name": "Élodie Renard", "email": "elodie@example.com"},
+    {"name": "Jane Doe", "email": "jane@example.com"},
+]
+EXTENSIONS = {"csv": ".csv", "excel": ".xlsx", "json": ".json", "parquet": ".parquet"}
 
-    # Create a sample CSV
-    df = pd.DataFrame({
-        'name': ['John Doe', 'Jane Doe'],
-        'email': ['john@example.com', 'jane@example.com']
-    })
-    df.to_csv(csv_file, index=False)
 
-    # Convert to JSON
-    convert_csv_to_json(csv_file, json_file)
-    
-    # Validate the conversion
-    df_json = pd.read_json(json_file)
-    assert 'name' in df_json.columns
-    assert 'email' in df_json.columns
-    assert df_json.shape == df.shape
+def write_identities(path, rows):
+    columns = list(rows[0])
 
-def test_csv_to_parquet_conversion(tmpdir):
-    """Test converting a CSV file to Parquet format."""
-    csv_file = tmpdir.join("test.csv")
-    parquet_file = tmpdir.join("test.parquet")
+    if path.suffix == ".csv":
+        with path.open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=columns)
+            writer.writeheader()
+            writer.writerows(rows)
+    elif path.suffix == ".xlsx":
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = "Users"
+        sheet.append(columns)
+        for row in rows:
+            sheet.append([row[column] for column in columns])
+        workbook.save(path)
+    elif path.suffix == ".json":
+        path.write_text(json.dumps(rows, ensure_ascii=False), encoding="utf-8")
+    elif path.suffix == ".parquet":
+        pq.write_table(pa.Table.from_pylist(rows), path)
+    else:
+        raise ValueError(f"Unsupported fixture format: {path.suffix}")
 
-    # Create a sample CSV
-    df = pd.DataFrame({
-        'name': ['John Doe', 'Jane Doe'],
-        'email': ['john@example.com', 'jane@example.com']
-    })
-    df.to_csv(csv_file, index=False)
 
-    # Convert to Parquet
-    convert_csv_to_parquet(csv_file, parquet_file)
-    
-    # Validate the conversion
-    df_parquet = pd.read_parquet(parquet_file)
-    assert 'name' in df_parquet.columns
-    assert 'email' in df_parquet.columns
-    assert df_parquet.shape == df.shape
+def read_identities(path):
+    if path.suffix == ".csv":
+        with path.open(encoding="utf-8", newline="") as handle:
+            return list(csv.DictReader(handle))
 
-def test_json_to_excel_conversion(tmpdir):
-    """Test converting a JSON file to Excel format."""
-    json_file = tmpdir.join("test.json")
-    excel_file = tmpdir.join("test.xlsx")
+    if path.suffix == ".xlsx":
+        workbook = load_workbook(path, read_only=True)
+        try:
+            columns, *rows = workbook["Users"].values
+            return [dict(zip(columns, row)) for row in rows]
+        finally:
+            workbook.close()
 
-    # Create a sample JSON
-    df = pd.DataFrame({
-        'name': ['John Doe', 'Jane Doe'],
-        'email': ['john@example.com', 'jane@example.com']
-    })
-    df.to_json(json_file, index=False, orient="records")
+    if path.suffix == ".json":
+        columns = json.loads(path.read_text(encoding="utf-8"))
+        return [
+            {name: values[index] for name, values in columns.items()}
+            for index in next(iter(columns.values()), {})
+        ]
 
-    # Convert to Excel
-    convert_json_to_excel(json_file, excel_file)
-    
-    # Validate the conversion
-    df_excel = pd.read_excel(excel_file, sheet_name='Users')
-    assert 'name' in df_excel.columns
-    assert 'email' in df_excel.columns
-    assert df_excel.shape == df.shape
+    if path.suffix == ".parquet":
+        return pq.read_table(path).to_pylist()
 
-def test_json_to_csv_conversion(tmpdir):
-    """Test converting a JSON file to CSV format."""
-    json_file = tmpdir.join("test.json")
-    csv_file = tmpdir.join("test.csv")
+    raise ValueError(f"Unsupported fixture format: {path.suffix}")
 
-    # Create a sample JSON
-    df = pd.DataFrame({
-        'name': ['John Doe', 'Jane Doe'],
-        'email': ['john@example.com', 'jane@example.com']
-    })
-    df.to_json(json_file, index=False, orient="records")
 
-    # Convert to CSV
-    convert_json_to_excel(json_file, csv_file)
-    
-    # Validate the conversion
-    df_csv = pd.read_excel(csv_file, sheet_name='Users')
-    assert 'name' in df_csv.columns
-    assert 'email' in df_csv.columns
-    assert df_csv.shape == df.shape
+@pytest.mark.parametrize(
+    ("source_format", "target_format"),
+    [
+        ("csv", "excel"),
+        ("csv", "json"),
+        ("csv", "parquet"),
+        ("json", "excel"),
+        ("json", "csv"),
+        ("json", "parquet"),
+        ("parquet", "excel"),
+        ("parquet", "csv"),
+        ("parquet", "json"),
+        ("excel", "csv"),
+        ("excel", "json"),
+    ],
+)
+def test_conversion_preserves_identity_records(tmp_path, source_format, target_format):
+    source_file = tmp_path / ("input" + EXTENSIONS[source_format])
+    target_file = tmp_path / ("output" + EXTENSIONS[target_format])
+    write_identities(source_file, IDENTITIES)
 
-def test_json_to_parquet_conversion(tmpdir):
-    """Test converting a json file to Parquet format."""
-    json_file = tmpdir.join("test.json")
-    parquet_file = tmpdir.join("test.parquet")
+    converter = AsyncFileConverter(source_file)
+    convert = getattr(converter, f"convert_{source_format}_to_{target_format}")
+    asyncio.run(convert(target_file))
 
-    # Create a sample json
-    df = pd.DataFrame({
-        'name': ['John Doe', 'Jane Doe'],
-        'email': ['john@example.com', 'jane@example.com']
-    })
-    df.to_json(json_file, index=False, orient="records")
+    assert read_identities(target_file) == IDENTITIES
 
-    # Convert to Parquet
-    convert_json_to_parquet(json_file, parquet_file)
-    
-    # Validate the conversion
-    df_parquet = pd.read_parquet(parquet_file)
-    assert 'name' in df_parquet.columns
-    assert 'email' in df_parquet.columns
-    assert df_parquet.shape == df.shape
 
-def test_parquet_to_excel_conversion(tmpdir):
-    """Test converting a Parquet file to Excel format."""
-    parquet_file = tmpdir.join("test.parquet")
-    excel_file = tmpdir.join("test.xlsx")
+def test_csv_to_excel_applies_column_mapping(tmp_path):
+    source_file = tmp_path / "input.csv"
+    target_file = tmp_path / "output.xlsx"
+    write_identities(source_file, IDENTITIES)
+    mapping = {"name": "Full Name", "email": "Email Address"}
 
-    # Create a sample Parquet
-    df = pd.DataFrame({
-        'name': ['John Doe', 'Jane Doe'],
-        'email': ['john@example.com', 'jane@example.com']
-    })
-    df.to_parquet(parquet_file, index=False)
+    asyncio.run(
+        AsyncFileConverter(source_file).convert_csv_to_excel(
+            target_file, column_mapping=mapping
+        )
+    )
 
-    # Convert to Excel
-    convert_parquet_to_excel(parquet_file, excel_file)
-    
-    # Validate the conversion
-    df_excel = pd.read_excel(excel_file, sheet_name='Users')
-    assert 'name' in df_excel.columns
-    assert 'email' in df_excel.columns
-    assert df_excel.shape == df.shape
+    assert read_identities(target_file) == [
+        {mapping[column]: value for column, value in row.items()} for row in IDENTITIES
+    ]
 
-def test_parquet_to_csv_conversion(tmpdir):
-    """Test converting a Parquet file to CSV format."""
-    parquet_file = tmpdir.join("test.parquet")
-    csv_file = tmpdir.join("test.csv")
 
-    # Create a sample Parquet
-    df = pd.DataFrame({
-        'name': ['John Doe', 'Jane Doe'],
-        'email': ['john@example.com', 'jane@example.com']
-    })
-    df.to_parquet(parquet_file, index=False)
+def test_excel_to_csv_keeps_only_requested_columns(tmp_path):
+    source_file = tmp_path / "input.xlsx"
+    target_file = tmp_path / "output.csv"
+    write_identities(source_file, [{**row, "age": 30} for row in IDENTITIES])
 
-    # Convert to CSV
-    convert_parquet_to_csv(parquet_file, csv_file)
-    
-    # Validate the conversion
-    df_csv = pd.read_csv(csv_file)
-    assert 'name' in df_csv.columns
-    assert 'email' in df_csv.columns
-    assert df_csv.shape == df.shape
+    asyncio.run(
+        AsyncFileConverter(source_file).convert_excel_to_csv(
+            target_file, columns_to_keep=["name", "email"]
+        )
+    )
 
-def test_parquet_to_json_conversion(tmpdir):
-    """Test converting a Parquet file to JSON format."""
-    parquet_file = tmpdir.join("test.parquet")
-    json_file = tmpdir.join("test.json")
-
-    # Create a sample Parquet
-    df = pd.DataFrame({
-        'name': ['John Doe', 'Jane Doe'],
-        'email': ['john@example.com', 'jane@example.com']
-    })
-    df.to_parquet(parquet_file, index=False)
-
-    # Convert to JSON
-    convert_parquet_to_json(parquet_file, json_file)
-    
-    # Validate the conversion
-    df_json = pd.read_json(json_file)
-    assert 'name' in df_json.columns
-    assert 'email' in df_json.columns
-    assert df_json.shape == df.shape
-
-def test_excel_to_csv_conversion(tmpdir):
-    """Test converting an Excel file to CSV format."""
-    excel_file = tmpdir.join("test.xlsx")
-    csv_file = tmpdir.join("test.csv")
-
-    # Create a sample Excel file
-    df = pd.DataFrame({
-        'name': ['John Doe', 'Jane Doe'],
-        'email': ['john@example.com', 'jane@example.com']
-    })
-    df.to_excel(excel_file, index=False, sheet_name='Users')
-
-    # Convert to CSV
-    convert_excel_to_csv(excel_file, csv_file)
-    
-    # Validate the conversion
-    df_csv = pd.read_csv(csv_file)
-    assert 'name' in df_csv.columns
-    assert 'email' in df_csv.columns
-    assert df_csv.shape == df.shape
-
-def test_csv_to_excel_with_column_mapping(tmpdir):
-    """Test CSV to Excel conversion with column mapping."""
-    csv_file = tmpdir.join("test.csv")
-    excel_file = tmpdir.join("test.xlsx")
-
-    # Create a sample CSV
-    df = pd.DataFrame({
-        'name': ['John Doe', 'Jane Doe'],
-        'email': ['john@example.com', 'jane@example.com']
-    })
-    df.to_csv(csv_file, index=False)
-
-    # Convert to Excel with column mapping
-    column_mapping = {"name": "Full Name", "email": "Email Address"}
-    convert_csv_to_excel(csv_file, excel_file, column_mapping=column_mapping)
-
-    # Validate that columns are renamed
-    df_excel = pd.read_excel(excel_file, sheet_name='Users')
-    assert "Full Name" in df_excel.columns
-    assert "Email Address" in df_excel.columns
-    assert "name" not in df_excel.columns
-    assert "email" not in df_excel.columns
-
-def test_excel_to_csv_with_columns_to_keep(tmpdir):
-    """Test Excel to CSV conversion keeping specific columns."""
-    excel_file = tmpdir.join("test.xlsx")
-    csv_file = tmpdir.join("test.csv")
-
-    # Create a sample Excel file
-    df = pd.DataFrame({
-        'name': ['John Doe', 'Jane Doe'],
-        'email': ['john@example.com', 'jane@example.com'],
-        'age': [30, 25]
-    })
-    df.to_excel(excel_file, index=False, sheet_name='Users')
-
-    # Convert to CSV, keeping only 'name' and 'email' columns
-    columns_to_keep = ['name', 'email']
-    convert_excel_to_csv(excel_file, csv_file, columns_to_keep=columns_to_keep)
-
-    # Validate that only specified columns are kept
-    df_csv = pd.read_csv(csv_file)
-    assert 'name' in df_csv.columns
-    assert 'email' in df_csv.columns
-    assert 'age' not in df_csv.columns
-    assert df_csv.shape[1] == 2  # Only 2 columns
+    assert read_identities(target_file) == IDENTITIES

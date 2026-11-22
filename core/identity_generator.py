@@ -95,8 +95,8 @@ async def generate_identities_parallel(n, output_file=None, output_format=None, 
 
             # Write to CSV and/or Excel and/or JSON and/or Parquet
             
-            writer = AsyncFileWriter(df, "output_file")
-            await writer.write_files(output_file)
+            writer = AsyncFileWriter(df, output_file)
+            await writer.write_files(output_format)
             
 
         end_time = time.time()
